@@ -144,7 +144,6 @@ html,body{
   color:var(--gold);white-space:nowrap;
   text-shadow:0 0 10px rgba(200,146,26,0.5);
 }
-/* Pages thickness illusion */
 .book-thickness{
   position:absolute;right:-3px;top:3px;bottom:3px;width:6px;
   background:repeating-linear-gradient(
@@ -197,7 +196,6 @@ html,body{
   border-top:1px solid rgba(200,146,26,0.3);
   padding-top:10px;width:100%;text-align:center;
 }
-/* Batik pattern overlay */
 .batik-bg{
   position:absolute;inset:0;opacity:0.06;
   background-image:
@@ -231,7 +229,6 @@ html,body{
   text-transform:uppercase;
 }
 
-/* Art photo area */
 .art-photo{
   width:100%;
   height:200px;
@@ -265,15 +262,6 @@ html,body{
 .art-gradient-4{background:linear-gradient(160deg,#0a0a20,#101040,#201060,#380a50);}
 .art-gradient-5{background:linear-gradient(160deg,#102010,#204020,#406020,#60801a);}
 
-/* Decorative elements inside photo */
-.deco-ring{
-  position:absolute;border-radius:50%;
-  border:2px solid rgba(255,255,255,0.1);
-  animation:pulse-soft 4s ease-in-out infinite;
-}
-@keyframes pulse-soft{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3;}50%{transform:translate(-50%,-50%) scale(1.05);opacity:.6;}}
-
-/* Text content */
 .art-text{
   flex:1;overflow-y:auto;padding:12px 14px 8px;
   scrollbar-width:thin;scrollbar-color:var(--gold) transparent;
@@ -389,6 +377,33 @@ html,body{
   min-width:100px;text-align:center;
 }
 
+/* ===== MUSIC BUTTON ===== */
+#music-btn{
+  position:fixed;bottom:24px;right:20px;
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(107,26,26,0.85);
+  border:2px solid var(--gold);
+  color:var(--gold2);font-size:18px;
+  cursor:pointer;z-index:60;
+  display:none; /* hidden until book opened */
+  align-items:center;justify-content:center;
+  transition:all .25s;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  backdrop-filter:blur(10px);
+}
+#music-btn:hover{
+  background:var(--maroon2);
+  box-shadow:0 4px 30px rgba(200,146,26,0.4);
+  transform:scale(1.1);
+}
+#music-btn.playing{
+  animation:music-pulse 2s ease-in-out infinite;
+}
+@keyframes music-pulse{
+  0%,100%{box-shadow:0 4px 20px rgba(0,0,0,0.4),0 0 0 0 rgba(200,146,26,0.4);}
+  50%{box-shadow:0 4px 20px rgba(0,0,0,0.4),0 0 0 8px rgba(200,146,26,0);}
+}
+
 /* ===== TOP BAR ===== */
 .top-bar{
   position:fixed;top:0;left:0;right:0;
@@ -407,10 +422,8 @@ html,body{
   color:rgba(200,160,106,0.7);
 }
 
-/* Ornament SVG helper */
 .orn-lines{stroke:var(--gold);stroke-width:1;fill:none;opacity:.6;}
 
-/* Page shadow */
 .page::after{
   content:'';
   position:absolute;right:-8px;top:0;bottom:0;width:8px;
@@ -421,6 +434,20 @@ html,body{
 </style>
 </head>
 <body>
+
+<!-- ===== 🎵 AUDIO ELEMENT ===== -->
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  CARA PAKAI MUSIK:                                          ║
+  ║  1. Taruh file musik (mp3/ogg) sefolder dengan HTML ini     ║
+  ║  2. Ganti "musik.mp3" di bawah dengan nama file musikmu     ║
+  ║  Rekomendasi: gamelan Jawa, gending, atau musik tradisional ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+<audio id="bgMusic" loop preload="auto">
+  <source src="musik.mp3" type="audio/mpeg">
+  <source src="musik.ogg" type="audio/ogg">
+</audio>
 
 <div class="ambient"></div>
 <div class="dust" id="dust"></div>
@@ -454,18 +481,14 @@ html,body{
 <div id="book-scene">
   <div class="book-container" id="bookContainer">
 
-    <!-- SPINE -->
     <div class="book-spine">
       <div class="spine-text">SENI BUDAYA JOMBANG</div>
     </div>
     <div class="book-thickness"></div>
 
-    <!-- PAGES (rendered in reverse order so first page is on top) -->
     <div class="pages-stack" id="pagesStack">
 
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <!-- PAGE 5 — BESUTAN (bottom of stack)                     -->
-      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- PAGE 5 — BESUTAN -->
       <div class="page" id="page5" style="z-index:1;">
         <div class="page-front content-page">
           <div class="page-header">
@@ -473,11 +496,6 @@ html,body{
             <span class="page-chapter">Seni Teater Rakyat</span>
           </div>
           <div class="art-photo">
-            <!-- ================================================ -->
-            <!-- 📷 FOTO 5 — BESUTAN                             -->
-            <!-- Ganti: src="foto-besutan.jpg"                   -->
-            <!-- Taruh file foto sefolder dengan file HTML ini   -->
-            <!-- ================================================ -->
             <img src="besutan.jpg" alt="Besutan Jombang"
               style="width:100%;height:100%;object-fit:cover;display:block;"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -493,9 +511,9 @@ html,body{
             <div class="art-desc">
               Besutan adalah kesenian teater rakyat tertua di Jombang yang diyakini sebagai <em>cikal bakal lahirnya Ludruk</em>. Kesenian ini diciptakan oleh seorang seniman legendaris Jombang bernama <strong>Pak Santik</strong> pada akhir abad ke-19, sekitar tahun 1907.
               <br><br>
-              Nama "Besutan" berasal dari kata <em>mbesut</em> (melap/membersihkan) yang menggambarkan tokoh utamanya: <strong>Pak Besut</strong>, seorang rakyat jelata berpakaian sederhana dengan ikat kepala merah putih yang melambangkan semangat kebangsaan. Tokoh ini menjadi simbol perlawanan rakyat terhadap penjajahan secara halus melalui seni.
+              Nama "Besutan" berasal dari kata <em>mbesut</em> (melap/membersihkan) yang menggambarkan tokoh utamanya: <strong>Pak Besut</strong>, seorang rakyat jelata berpakaian sederhana dengan ikat kepala merah putih yang melambangkan semangat kebangsaan.
               <br><br>
-              Pertunjukan Besutan dibawakan oleh satu atau dua orang pemain dengan dialog jenaka berbahasa Jawa ngoko khas Jombang. Iringan musik menggunakan kendang, gong, dan suling sederhana. Besutan tampil dalam hajatan kampung, syukuran, dan upacara adat.
+              Pertunjukan Besutan dibawakan oleh satu atau dua orang pemain dengan dialog jenaka berbahasa Jawa ngoko khas Jombang. Iringan musik menggunakan kendang, gong, dan suling sederhana.
               <br><br>
               Keunikan Besutan terletak pada fungsinya sebagai <em>media dakwah</em> dan kritik sosial — pesan disampaikan secara tersirat melalui humor dan lakon yang mengena di hati masyarakat.
             </div>
@@ -523,9 +541,7 @@ html,body{
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <!-- PAGE 4 — JARAN KEPANG DOR                             -->
-      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- PAGE 4 — JARAN KEPANG DOR -->
       <div class="page" id="page4" style="z-index:2;">
         <div class="page-front content-page">
           <div class="page-header">
@@ -533,11 +549,6 @@ html,body{
             <span class="page-chapter">Seni Pertunjukan Rakyat</span>
           </div>
           <div class="art-photo">
-            <!-- ================================================ -->
-            <!-- 📷 FOTO 4 — JARAN KEPANG DOR                   -->
-            <!-- Ganti: src="foto-jaran-kepang-dor.jpg"          -->
-            <!-- Taruh file foto sefolder dengan file HTML ini   -->
-            <!-- ================================================ -->
             <img src="kepangdor.jpg" alt="Jaran Kepang Dor Jombang"
               style="width:100%;height:100%;object-fit:cover;display:block;"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -551,13 +562,13 @@ html,body{
             <div class="art-title">🐎 Jaran Kepang Dor</div>
             <div class="art-origin">● Kesenian Sakral Khas Jombang — Akar Budaya Mataraman</div>
             <div class="art-desc">
-              Jaran Kepang Dor adalah varian unik kesenian kuda kepang yang berkembang khas di wilayah Jombang, berbeda dengan Jaranan pada umumnya. Kata <em>"Dor"</em> berasal dari bunyi instrumen utamanya — <strong>terbang dor</strong>, yaitu rebana besar berdiameter 50–70 cm yang menghasilkan suara menggelegar seperti "dor!".
+              Jaran Kepang Dor adalah varian unik kesenian kuda kepang yang berkembang khas di wilayah Jombang. Kata <em>"Dor"</em> berasal dari bunyi instrumen utamanya — <strong>terbang dor</strong>, yaitu rebana besar berdiameter 50–70 cm yang menghasilkan suara menggelegar seperti "dor!".
               <br><br>
-              Instrumen pengiring Jaran Kepang Dor sangat khas: terbang dor, kentongan, angklung bambu, dan gong kecil yang membentuk harmoni ritmis primitif namun memukau. Tidak menggunakan gamelan seperti jaranan biasa, inilah keunikan yang membedakannya.
+              Instrumen pengiring sangat khas: terbang dor, kentongan, angklung bambu, dan gong kecil yang membentuk harmoni ritmis primitif namun memukau. Tidak menggunakan gamelan seperti jaranan biasa.
               <br><br>
-              Para penari (disebut <em>pembarong</em>) menunggangi kuda anyaman bambu sambil menari dengan gerakan dinamis dan trance. Pertunjukan selalu diawali dengan ritual <em>selamatan</em> dan pembacaan doa keselamatan oleh sesepuh.
+              Para penari (disebut <em>pembarong</em>) menunggangi kuda anyaman bambu sambil menari dengan gerakan dinamis dan trance. Pertunjukan selalu diawali ritual <em>selamatan</em> dan doa keselamatan oleh sesepuh.
               <br><br>
-              Jaran Kepang Dor berfungsi sebagai <em>tolak bala</em>, penghormatan leluhur, dan hiburan rakyat. Biasa ditampilkan saat bersih desa, khitanan massal, dan peringatan hari besar nasional di desa-desa Jombang.
+              Berfungsi sebagai <em>tolak bala</em>, penghormatan leluhur, dan hiburan rakyat. Ditampilkan saat bersih desa, khitanan massal, dan peringatan hari besar nasional.
             </div>
             <div>
               <span class="art-tag">Terbang Dor</span>
@@ -577,7 +588,6 @@ html,body{
             <span class="page-chapter">Seni Teater Rakyat</span>
           </div>
           <div class="art-photo">
-            <!-- 📷 FOTO 5 (sisi balik hal. 4) — foto-besutan.jpg -->
             <img src="besutan.jpg" alt="Besutan Jombang"
               style="width:100%;height:100%;object-fit:cover;display:block;"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -596,9 +606,7 @@ html,body{
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <!-- PAGE 3 — LUDRUK                                       -->
-      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- PAGE 3 — LUDRUK -->
       <div class="page" id="page3" style="z-index:3;">
         <div class="page-front content-page">
           <div class="page-header">
@@ -606,11 +614,6 @@ html,body{
             <span class="page-chapter">Seni Teater Rakyat</span>
           </div>
           <div class="art-photo">
-            <!-- ================================================ -->
-            <!-- 📷 FOTO 3 — LUDRUK                              -->
-            <!-- Ganti: src="foto-ludruk.jpg"                    -->
-            <!-- Taruh file foto sefolder dengan file HTML ini   -->
-            <!-- ================================================ -->
             <img src="ludruk.webp" alt="Ludruk Jombang"
               style="width:100%;height:100%;object-fit:cover;display:block;"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -626,11 +629,9 @@ html,body{
             <div class="art-desc">
               Ludruk adalah seni pertunjukan teater rakyat yang lahir dan tumbuh besar di Jombang, Jawa Timur. Merupakan perkembangan dari kesenian Besutan, Ludruk berkembang pesat pada awal abad ke-20 menjadi hiburan rakyat paling populer di seluruh Jawa Timur.
               <br><br>
-              Pertunjukan Ludruk menggabungkan empat unsur seni sekaligus: <em>drama (lakon), tari remo sebagai pembuka, nyanyian (tandhakan)</em>, dan <em>lawak (dagelan)</em>. Urutan pertunjukan selalu dimulai dengan Tari Remo → Dagelan Besutan → Lakon utama.
+              Pertunjukan Ludruk menggabungkan empat unsur seni: <em>drama (lakon), tari remo sebagai pembuka, nyanyian (tandhakan)</em>, dan <em>lawak (dagelan)</em>.
               <br><br>
-              Ciri paling khas Ludruk adalah semua pemeran wanita dimainkan oleh laki-laki yang disebut <strong>waranggono</strong> atau <em>ludrukan</em>. Mereka berdandan sangat mirip wanita dan sering menjadi bagian paling dinantikan penonton.
-              <br><br>
-              Tema cerita Ludruk beragam: dari kisah perjuangan kemerdekaan, cerita rakyat lokal, hingga permasalahan sosial masa kini. Pada masa revolusi, Ludruk menjadi <em>senjata propaganda</em> yang ampuh untuk membangkitkan semangat perjuangan rakyat melawan penjajah.
+              Ciri paling khas Ludruk adalah semua pemeran wanita dimainkan oleh laki-laki yang disebut <strong>waranggono</strong>. Pada masa revolusi, Ludruk menjadi <em>senjata propaganda</em> yang ampuh untuk membangkitkan semangat perjuangan rakyat.
             </div>
             <div>
               <span class="art-tag">Waranggono</span>
@@ -650,7 +651,6 @@ html,body{
             <span class="page-chapter">Seni Pertunjukan Rakyat</span>
           </div>
           <div class="art-photo">
-            <!-- 📷 FOTO 4 (sisi balik hal. 3) — foto-jaran-kepang-dor.jpg -->
             <img src="kepangdor.jpg" alt="Jaran Kepang Dor"
               style="width:100%;height:100%;object-fit:cover;display:block;"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -662,16 +662,14 @@ html,body{
           <div class="art-text">
             <div class="art-title">🐎 Jaran Kepang Dor</div>
             <div class="art-origin">● Kesenian Sakral Khas Jombang</div>
-            <div class="art-desc">Jaran Kepang Dor khas Jombang menggunakan instrumen <strong>terbang dor</strong> — rebana besar 50–70 cm yang menghasilkan suara menggelegar. Tidak pakai gamelan, inilah yang membedakannya dari jaranan biasa.<br><br>Penari (pembarong) menunggangi kuda anyaman bambu dengan gerakan trance. Berfungsi sebagai tolak bala dan penghormatan leluhur.</div>
+            <div class="art-desc">Jaran Kepang Dor khas Jombang menggunakan instrumen <strong>terbang dor</strong> — rebana besar 50–70 cm. Tidak pakai gamelan, inilah yang membedakannya dari jaranan biasa.<br><br>Penari (pembarong) menunggangi kuda anyaman bambu dengan gerakan trance. Berfungsi sebagai tolak bala dan penghormatan leluhur.</div>
             <div><span class="art-tag">Terbang Dor</span><span class="art-tag">Trance</span><span class="art-tag">Tolak Bala</span></div>
           </div>
           <div class="page-footer"><span class="footer-logo">✦ JOMBANG BERBUDAYA</span><span class="footer-page">4 / 5</span></div>
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <!-- PAGE 2 — WAYANG TOPENG JATIDUWUR                      -->
-      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- PAGE 2 — WAYANG TOPENG JATIDUWUR -->
       <div class="page" id="page2" style="z-index:4;">
         <div class="page-front content-page">
           <div class="page-header">
@@ -679,11 +677,6 @@ html,body{
             <span class="page-chapter">Seni Pertunjukan Klasik</span>
           </div>
           <div class="art-photo">
-            <!-- ================================================ -->
-            <!-- 📷 FOTO 2 — WAYANG TOPENG JATIDUWUR             -->
-            <!-- Ganti: src="foto-wayang-topeng-jatiduwur.jpg"   -->
-            <!-- Taruh file foto sefolder dengan file HTML ini   -->
-            <!-- ================================================ -->
             <img src="topengjatiduwur.webp" alt="Wayang Topeng Jatiduwur"
               style="width:100%;height:100%;object-fit:cover;display:block;"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -697,13 +690,11 @@ html,body{
             <div class="art-title">🎭 Wayang Topeng Jatiduwur</div>
             <div class="art-origin">● Warisan Budaya Tak Benda — Desa Jatiduwur, Kesamben, Jombang</div>
             <div class="art-desc">
-              Wayang Topeng Jatiduwur adalah kesenian langka dan sangat berharga yang hanya ada di <strong>Desa Jatiduwur, Kecamatan Kesamben, Kabupaten Jombang</strong>. Kesenian ini telah ada sejak ratusan tahun lalu dan diwariskan secara turun-temurun dalam satu keluarga pelestari.
+              Wayang Topeng Jatiduwur adalah kesenian langka yang hanya ada di <strong>Desa Jatiduwur, Kecamatan Kesamben, Kabupaten Jombang</strong>. Diwariskan secara turun-temurun dalam satu keluarga pelestari.
               <br><br>
-              Berbeda dengan wayang kulit yang menggunakan bayangan, Wayang Topeng ditampilkan secara langsung oleh penari yang mengenakan <em>topeng (mask)</em> bermotif khas Majapahit. Setiap topeng mewakili karakter tertentu — putih untuk ksatria, merah untuk angkara murka, hitam untuk tokoh sakti, dan emas untuk dewa.
+              Penari mengenakan <em>topeng (mask)</em> bermotif Majapahit. Setiap topeng mewakili karakter: putih = ksatria, merah = angkara, hitam = sakti, emas = dewa.
               <br><br>
-              Kisah yang dibawakan berasal dari epos <em>Panji</em> — cerita asli Jawa yang lahir dari tanah Jawa Timur, menceritakan petualangan Raden Panji Asmarabangun mencari kekasihnya Dewi Sekartaji. Berbeda dari Mahabharata atau Ramayana, kisah Panji adalah identitas budaya murni Jawa.
-              <br><br>
-              Wayang Topeng Jatiduwur telah ditetapkan sebagai <strong>Warisan Budaya Tak Benda (WBTB)</strong> oleh Kementerian Pendidikan dan Kebudayaan RI. Pelestarian dilakukan dengan serius karena jumlah pengrawit dan penari yang mahir semakin sedikit.
+              Kisah yang dibawakan dari epos <em>Panji</em> — cerita asli Jawa Timur. Telah ditetapkan sebagai <strong>Warisan Budaya Tak Benda (WBTB)</strong> oleh Kemdikbud RI.
             </div>
             <div>
               <span class="art-tag">WBTB Nasional</span>
@@ -723,7 +714,6 @@ html,body{
             <span class="page-chapter">Seni Teater Rakyat</span>
           </div>
           <div class="art-photo">
-            <!-- 📷 FOTO 3 (sisi balik hal. 2) — foto-ludruk.jpg -->
             <img src="ludruk.webp" alt="Ludruk Jombang"
               style="width:100%;height:100%;object-fit:cover;display:block;"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -735,16 +725,14 @@ html,body{
           <div class="art-text">
             <div class="art-title">🎪 Ludruk</div>
             <div class="art-origin">● Teater Rakyat Terbesar Jawa Timur</div>
-            <div class="art-desc">Ludruk lahir dari Jombang, menggabungkan Tari Remo, dagelan, tandhakan, dan lakon drama. Ciri khasnya: semua peran wanita dimainkan laki-laki (<em>waranggono</em>).<br><br>Pernah menjadi senjata propaganda kemerdekaan. Pertunjukan selalu dimulai dengan Tari Remo → Dagelan Besutan → Lakon utama.</div>
+            <div class="art-desc">Ludruk lahir dari Jombang, menggabungkan Tari Remo, dagelan, tandhakan, dan lakon drama. Ciri khasnya: semua peran wanita dimainkan laki-laki (<em>waranggono</em>).<br><br>Pernah menjadi senjata propaganda kemerdekaan.</div>
             <div><span class="art-tag">Waranggono</span><span class="art-tag">Dagelan</span><span class="art-tag">Tari Remo</span></div>
           </div>
           <div class="page-footer"><span class="footer-logo">✦ JOMBANG BERBUDAYA</span><span class="footer-page">3 / 5</span></div>
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════════ -->
-      <!-- PAGE 1 — TARI REMO (top of stack)                     -->
-      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- PAGE 1 — TARI REMO -->
       <div class="page" id="page1" style="z-index:5;">
         <div class="page-front content-page">
           <div class="page-header">
@@ -752,11 +740,6 @@ html,body{
             <span class="page-chapter">Seni Tari Tradisional</span>
           </div>
           <div class="art-photo">
-            <!-- ================================================ -->
-            <!-- 📷 FOTO 1 — TARI REMO                           -->
-            <!-- Ganti: src="foto-tari-remo.jpg"                 -->
-            <!-- Taruh file foto sefolder dengan file HTML ini   -->
-            <!-- ================================================ -->
             <img src="budaya2.jpg" alt="Tari Remo Jombang"
               style="width:100%;height:100%;object-fit:cover;display:block;"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -770,13 +753,11 @@ html,body{
             <div class="art-title">💃 Tari Remo</div>
             <div class="art-origin">● Ikon Tari Jawa Timur — Lahir dari Rahim Jombang</div>
             <div class="art-desc">
-              Tari Remo adalah tarian paling ikonik dari Jombang dan menjadi <em>ikon tari Jawa Timur</em>. Lahir sebagai tarian pembuka pertunjukan Ludruk, kini Tari Remo telah menjelma menjadi tari penyambut tamu resmi di acara kenegaraan, festival budaya, dan upacara adat.
+              Tari Remo adalah tarian paling ikonik dari Jombang dan menjadi <em>ikon tari Jawa Timur</em>. Lahir sebagai tarian pembuka pertunjukan Ludruk, kini menjelma menjadi tari penyambut tamu resmi di acara kenegaraan dan festival budaya.
               <br><br>
-              Kostum Tari Remo sangat khas: <strong>iket kepala</strong> (ikat kepala berlipat), <strong>baju beskap</strong> bercorak, <strong>sampur</strong> (selendang panjang) yang dilambai-lambaikan, <strong>jarik batik</strong>, dan deretan <strong>lonceng (klonthong)</strong> di pergelangan kaki yang berbunyi merdu mengikuti setiap hentakan.
+              Kostum khasnya: <strong>iket kepala</strong>, <strong>baju beskap</strong> bercorak, <strong>sampur</strong> yang dilambai-lambaikan, <strong>jarik batik</strong>, dan <strong>lonceng (klonthong)</strong> di pergelangan kaki.
               <br><br>
-              Gerakan utama Tari Remo mencerminkan keberanian seorang ksatria: <em>gejug</em> (hentakan kaki keras ke lantai), <em>trecet</em> (berlari-lari kecil cepat di tempat), dan <em>ukel</em> (putaran pergelangan tangan yang lembut namun tegas).
-              <br><br>
-              Ada dua gaya Tari Remo: <strong>Remo Jombangan</strong> (lebih gagah, maskulin, tempo cepat) dan <strong>Remo Surabayan</strong> (lebih halus). Remo Jombangan dianggap gaya yang lebih tua dan otentik.
+              Gerakan utama: <em>gejug</em> (hentakan kaki keras), <em>trecet</em> (berlari-lari kecil cepat), dan <em>ukel</em> (putaran pergelangan tangan). Ada dua gaya: <strong>Remo Jombangan</strong> (lebih gagah) dan <strong>Remo Surabayan</strong>.
             </div>
             <div>
               <span class="art-tag">Ikon Jawa Timur</span>
@@ -796,7 +777,6 @@ html,body{
             <span class="page-chapter">Seni Pertunjukan Klasik</span>
           </div>
           <div class="art-photo">
-            <!-- 📷 FOTO 2 (sisi balik cover) — foto-wayang-topeng-jatiduwur.jpg -->
             <img src="topengjatiduwur.webp" alt="Wayang Topeng Jatiduwur"
               style="width:100%;height:100%;object-fit:cover;display:block;"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -808,14 +788,14 @@ html,body{
           <div class="art-text">
             <div class="art-title">🎭 Wayang Topeng Jatiduwur</div>
             <div class="art-origin">● Warisan Budaya Tak Benda — Kesamben, Jombang</div>
-            <div class="art-desc">Kesenian langka dari Desa Jatiduwur, Kesamben. Penari mengenakan topeng bermotif Majapahit membawakankan kisah <em>Panji</em> — cerita asli Jawa. Telah ditetapkan sebagai <strong>WBTB Nasional</strong> oleh Kemdikbud RI.<br><br>Topeng putih = ksatria, merah = angkara, hitam = sakti, emas = dewa.</div>
+            <div class="art-desc">Kesenian langka dari Desa Jatiduwur, Kesamben. Penari mengenakan topeng bermotif Majapahit membawakan kisah <em>Panji</em>. Telah ditetapkan sebagai <strong>WBTB Nasional</strong> oleh Kemdikbud RI.</div>
             <div><span class="art-tag">WBTB Nasional</span><span class="art-tag">Topeng Panji</span><span class="art-tag">Jatiduwur</span></div>
           </div>
           <div class="page-footer"><span class="footer-logo">✦ JOMBANG BERBUDAYA</span><span class="footer-page">2 / 5</span></div>
         </div>
       </div>
 
-      <!-- COVER (very top) -->
+      <!-- COVER -->
       <div class="page" id="pageCover" style="z-index:6;">
         <div class="page-front cover-front">
           <div class="batik-bg"></div>
@@ -861,7 +841,6 @@ html,body{
             <span class="page-chapter">Seni Tari</span>
           </div>
           <div class="art-photo">
-            <!-- 📷 FOTO 1 (sisi balik cover) — sama: foto-tari-remo.jpg -->
             <img src="budaya2.jpg" alt="Tari Remo Jombang"
               style="width:100%;height:100%;object-fit:cover;display:block;"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -873,7 +852,7 @@ html,body{
           <div class="art-text">
             <div class="art-title"><span class="title-icon">💃</span> Tari Remo</div>
             <div class="art-origin">● Tari Penyambut Tamu Khas Jombang</div>
-            <div class="art-desc">Tari Remo merupakan tarian paling ikonik dari Jombang. Penari mengenakan kostum ikat kepala, sampur, dan lonceng di pergelangan kaki yang berbunyi merdu.<br><br>Gerakannya energik dan gagah, melambangkan keberanian ksatria dengan ciri khas <em>gejug</em> dan <em>trecet</em>.</div>
+            <div class="art-desc">Tari Remo merupakan tarian paling ikonik dari Jombang. Penari mengenakan kostum ikat kepala, sampur, dan lonceng di pergelangan kaki.<br><br>Gerakannya energik dan gagah, melambangkan keberanian ksatria dengan ciri khas <em>gejug</em> dan <em>trecet</em>.</div>
             <div><span class="art-tag">Tari Penyambut</span><span class="art-tag">Ksatria</span></div>
           </div>
           <div class="page-footer"><span class="footer-logo">✦ JOMBANG BERBUDAYA</span><span class="footer-page">1 / 5</span></div>
@@ -890,6 +869,9 @@ html,body{
   <div class="page-indicator" id="pageIndicator">SAMPUL</div>
   <button class="ctrl-btn" id="nextBtn" onclick="nextPage()">▶</button>
 </div>
+
+<!-- ===== TOMBOL MUSIK (muncul setelah buku dibuka) ===== -->
+<button id="music-btn" onclick="toggleMusic()" title="Musik On/Off">🎵</button>
 
 <script>
 // ===== DUST PARTICLES =====
@@ -920,9 +902,76 @@ function generateQR(){
   }
 }
 
+// ===== 🎵 MUSIK =====
+const audio = document.getElementById('bgMusic');
+let musicPlaying = false;
+
+// Set volume awal — sesuaikan jika perlu (0.0 – 1.0)
+audio.volume = 0.55;
+
+function startMusic(){
+  // Fade in dari volume 0
+  audio.volume = 0;
+  audio.play().then(() => {
+    musicPlaying = true;
+    updateMusicBtn();
+    // Fade volume naik perlahan
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+      vol = Math.min(vol + 0.05, 0.55);
+      audio.volume = vol;
+      if(vol >= 0.55) clearInterval(fadeIn);
+    }, 120);
+  }).catch(() => {
+    // Browser blokir autoplay — tampilkan tombol musik manual
+    console.warn('Autoplay diblokir browser. Klik 🎵 untuk putar musik.');
+  });
+}
+
+function toggleMusic(){
+  if(musicPlaying){
+    // Fade out lalu pause
+    let vol = audio.volume;
+    const fadeOut = setInterval(() => {
+      vol = Math.max(vol - 0.05, 0);
+      audio.volume = vol;
+      if(vol <= 0){
+        clearInterval(fadeOut);
+        audio.pause();
+        musicPlaying = false;
+        updateMusicBtn();
+      }
+    }, 80);
+  } else {
+    audio.play().then(() => {
+      musicPlaying = true;
+      updateMusicBtn();
+      let vol = 0;
+      const fadeIn = setInterval(() => {
+        vol = Math.min(vol + 0.05, 0.55);
+        audio.volume = vol;
+        if(vol >= 0.55) clearInterval(fadeIn);
+      }, 120);
+    });
+  }
+}
+
+function updateMusicBtn(){
+  const btn = document.getElementById('music-btn');
+  if(musicPlaying){
+    btn.textContent = '🔊';
+    btn.classList.add('playing');
+    btn.title = 'Klik untuk matikan musik';
+  } else {
+    btn.textContent = '🔇';
+    btn.classList.remove('playing');
+    btn.title = 'Klik untuk putar musik';
+  }
+}
+
 // ===== BOOK STATE =====
-let currentPage = -1; // -1 = cover closed
-const totalPages = 5; // 5 content spreads + cover
+let currentPage = -1;
+const totalPages = 5;
 const pageLabels = ['SAMPUL','Hal. 1 — Tari Remo','Hal. 2 — Wayang Topeng Jatiduwur','Hal. 3 — Ludruk','Hal. 4 — Jaran Kepang Dor','Hal. 5 — Besutan','PENUTUP'];
 const pageIds = ['pageCover','page1','page2','page3','page4','page5'];
 
@@ -932,6 +981,13 @@ function openBook(){
   currentPage = 0;
   updateIndicator();
   generateQR();
+
+  // Tampilkan tombol musik
+  const musicBtn = document.getElementById('music-btn');
+  musicBtn.style.display = 'flex';
+
+  // 🎵 Mulai musik otomatis — dipicu oleh klik user (tombol BUKA BUKU)
+  startMusic();
 }
 
 function nextPage(){
@@ -978,6 +1034,7 @@ document.addEventListener('touchend', e => {
 document.addEventListener('keydown', e => {
   if(e.key === 'ArrowRight' || e.key === 'ArrowDown') nextPage();
   if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevPage();
+  if(e.key === 'm' || e.key === 'M') toggleMusic(); // shortcut M = mute/unmute
 });
 </script>
 </body>
